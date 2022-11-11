@@ -1,0 +1,37 @@
+version: "3.2"
+
+services:
+  node:
+    build: .
+      # context: .
+      # dockerfile: ./docker/node/Dockerfile
+    # volumes:
+    # # https://stackoverflow.com/a/32785014/232619
+    #   - .:/app
+    #   - /app/node_modules
+    # command: /usr/local/wait-for-it.sh mongo:27017 -- npm start
+    # env_file:
+    #   - .env
+    ports:
+      - 5000:5000
+    networks:
+      - webnet
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:5
+    restart: always
+    networks:
+      - webnet
+    ports:
+      - 27018:27017
+    environment:
+      - MONGO_INITDB_DATABASE=main
+      # MONGO_INITDB_ROOT_USERNAME: root
+      # MONGO_INITDB_ROOT_PASSWORD: example
+    # volumes:
+    #   - ./data:/data/db
+
+networks:
+  webnet:
