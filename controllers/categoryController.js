@@ -1,22 +1,18 @@
-class Api {
-  model = null;
-  constructor(model) {
-    this.model = model;
-    console.log("model", this.model);
-  }
+const category = require("../models/category");
 
+class CategoryController {
   async getAll(req, res) {
     try {
-      const data = await this.model.find();
+      const data = await category.find();
       res.send(data);
     } catch (error) {
-      console.log(error, this.model);
+      console.log(error, category);
       res.status(500).send(error);
     }
   }
   create(req, res) {
     try {
-      const data = new this.model(req.body);
+      const data = new category(req.body);
       data.save();
       res.send(data);
     } catch (error) {
@@ -25,7 +21,7 @@ class Api {
   }
   getOne(req, res) {
     try {
-      const data = this.model.findById(req.params.id);
+      const data = category.findById(req.params.id);
       res.send(data);
     } catch (error) {
       res.status(500).send(error);
@@ -33,7 +29,7 @@ class Api {
   }
   edit(req, res) {
     try {
-      const data = this.model.findByIdAndUpdate(req.params.id, req.body, {
+      const data = category.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
       });
       res.send(data);
@@ -43,7 +39,7 @@ class Api {
   }
   delete(req, res) {
     try {
-      const data = this.model.findByIdAndDelete(req.params.id);
+      const data = category.findByIdAndDelete(req.params.id);
       res.send(data);
     } catch (error) {
       res.status(500).send(error);
@@ -51,4 +47,4 @@ class Api {
   }
 }
 
-module.exports = Api;
+module.exports = new CategoryController();
