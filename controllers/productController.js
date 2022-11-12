@@ -12,6 +12,7 @@ class ProductController {
   }
   create(req, res) {
     try {
+      console.log(req.files);
       const data = new product(req.body);
       data.save();
       res.send(data);
