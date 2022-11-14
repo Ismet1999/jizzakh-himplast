@@ -12,8 +12,14 @@ class ProductController {
   }
   create(req, res) {
     try {
-      console.log(req.files);
-      const data = new product(req.body);
+      let item = {
+        ...req.body,
+        name: JSON.parse(req.body.name),
+        description: JSON.parse(req.body.description),
+        main_image: req.files.main_image[0].path,
+        images: req.files.images.map((item) => item.path),
+      };
+      const data = new product(item);
       data.save();
       res.send(data);
     } catch (error) {
