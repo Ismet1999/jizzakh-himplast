@@ -1,16 +1,16 @@
-const product = require("../models/product");
+const Category = require("../models/category");
+const Product = require("../models/product");
 
 class ProductController {
   async getAll(req, res) {
     try {
-      const data = await product.find(req.query);
+      const data = await Product.find(req.query);
       res.send(data);
     } catch (error) {
-      console.log(error, product);
       res.status(500).send(error);
     }
   }
-  create(req, res) {
+  async create(req, res) {
     try {
       let item = {
         ...req.body,
@@ -19,24 +19,30 @@ class ProductController {
         main_image: req.files.main_image[0].path,
         images: req.files.images.map((item) => item.path),
       };
-      const data = new product(item);
-      data.save();
+      const data = new Product(item);
+      await data.save();
+      await Category.findByIdAndUpdate(
+        req.body.category,
+        { $push: { products: result._id } },
+        { new: true }
+      );
+      result = await result.populate("category").execPopulate();
+      res.send(result);
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  }
+  async getOne(req, res) {
+    try {
+      const data = await Product.findById(req.params.id);
       res.send(data);
     } catch (error) {
       res.status(500).send(error);
     }
   }
-  getOne(req, res) {
+  async edit(req, res) {
     try {
-      const data = product.findById(req.params.id);
-      res.send(data);
-    } catch (error) {
-      res.status(500).send(error);
-    }
-  }
-  edit(req, res) {
-    try {
-      const data = product.findByIdAndUpdate(req.params.id, req.body, {
+      const data = await Product.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
       });
       res.send(data);
@@ -44,9 +50,9 @@ class ProductController {
       res.status(500).send(error);
     }
   }
-  delete(req, res) {
+  async delete(req, res) {
     try {
-      const data = product.findByIdAndDelete(req.params.id);
+      const data = await Product.findByIdAndDelete(req.params.id);
       res.send(data);
     } catch (error) {
       res.status(500).send(error);

@@ -1,19 +1,25 @@
-const category = require("../models/category");
+const user = require("../models/user");
+const bcrypt = require("bcrypt");
 
-class CategoryController {
+class UserController {
   async getAll(req, res) {
     try {
-      const data = await category.find(req.query);
+      const data = await user.find(req.query);
       res.send(data);
     } catch (error) {
-      console.log(error, category);
       res.status(500).send(error);
     }
   }
   async create(req, res) {
     try {
-      const data = new category(req.body);
-      let result = await data.save();
+      const item = {
+        username: req.body.username,
+        password: req.body.password,
+        role: req.body.role,
+        admin: req.body.admin,
+      };
+      const data = new user(item);
+      const result = await data.save();
       res.send(result);
     } catch (error) {
       res.status(500).send(error);
@@ -21,7 +27,7 @@ class CategoryController {
   }
   async getOne(req, res) {
     try {
-      const data = await category.findById(req.params.id);
+      const data = await user.findById(req.params.id);
       res.send(data);
     } catch (error) {
       res.status(500).send(error);
@@ -29,7 +35,7 @@ class CategoryController {
   }
   async edit(req, res) {
     try {
-      const data = await category.findByIdAndUpdate(req.params.id, req.body, {
+      const data = await user.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
       });
       res.send(data);
@@ -39,7 +45,7 @@ class CategoryController {
   }
   async delete(req, res) {
     try {
-      const data = await category.findByIdAndDelete(req.params.id);
+      const data = await user.findByIdAndDelete(req.params.id);
       res.send(data);
     } catch (error) {
       res.status(500).send(error);
@@ -47,4 +53,4 @@ class CategoryController {
   }
 }
 
-module.exports = new CategoryController();
+module.exports = new UserController();
