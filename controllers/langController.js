@@ -5,16 +5,17 @@ class LangController {
     try {
       const data = await lang.find(req.query);
       res.send(data);
-    } catch (error) { 
+    } catch (error) {
       res.status(500).send(error);
     }
   }
   async create(req, res) {
     try {
       const data = new lang(req.body);
-      let res = await data.save();
-      res.send(res);
+      let result = await data.save();
+      res.status(201).send(result);
     } catch (error) {
+      console.log(error);
       res.status(500).send(error);
     }
   }

@@ -6,10 +6,12 @@ const LangSchema = new Schema({
   name: {
     type: String,
     required: true,
+    unique: [true , 'Поле name должно быть уникальным'],
   },
   code: {
     type: String,
     required: true,
+    unique: [true , 'Поле code должно быть уникальным'],
   },
 });
 
