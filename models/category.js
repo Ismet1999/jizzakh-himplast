@@ -13,6 +13,10 @@ const CategorySchema = new Schema({
       ref: "product",
     },
   ],
+  is_active: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 CategorySchema.plugin(AutoIncrement, { id: "category_id", inc_field: "id" });
