@@ -4,7 +4,7 @@ const Product = require("../models/product");
 class ProductController {
   async getAll(req, res) {
     try {
-      const data = await Product.find(req.query);
+      const data = await Product.find(req.query).populate("category");
       res.send(data);
     } catch (error) {
       res.status(500).send(error);
@@ -16,19 +16,27 @@ class ProductController {
         ...req.body,
         name: JSON.parse(req.body.name),
         description: JSON.parse(req.body.description),
-        main_image: req.files.main_image[0].path,
-        images: req.files.images.map((item) => item.path),
+        specifications: JSON.parse(req.body.specifications),
       };
+      let main_image = req.files.main_image && req.files.main_image[0].path;
+      let images = req.files.images?.map((item) => item.path);
+      if (main_image) {
+        item.main_image = main_image;
+      }
+      if (images && images.length) {
+        item.images = images;
+      }
       const data = new Product(item);
       await data.save();
       await Category.findByIdAndUpdate(
         req.body.category,
-        { $push: { products: result._id } },
+        { $push: { products: data._id } },
         { new: true }
       );
-      result = await result.populate("category").execPopulate();
+      let result = await data.populate("category");
       res.send(result);
     } catch (error) {
+      console.log(error);
       res.status(500).send(error);
     }
   }
@@ -42,9 +50,35 @@ class ProductController {
   }
   async edit(req, res) {
     try {
-      const data = await Product.findByIdAndUpdate(req.params.id, req.body, {
+      let item = {
+        ...req.body,
+        name: JSON.parse(req.body.name),
+        description: JSON.parse(req.body.description),
+        specifications: JSON.parse(req.body.specifications),
+      };
+      let main_image = req.files.main_image && req.files.main_image[0].path;
+      let images = req.files.images?.map((item) => item.path);
+      if (main_image) {
+        item.main_image = main_image;
+      }
+      if (images && images.length) {
+        item.images = images;
+      }
+      const data = await Product.findByIdAndUpdate(req.params.id, item, {
         new: true,
       });
+      await Category.findByIdAndUpdate(
+        req.body.category,
+        { $pull: { products: data._id } },
+        { new: true }
+      );
+      await Category.findByIdAndUpdate(
+        req.body.category,
+        { $push: { products: data._id } },
+        { new: true }
+      );
+      let result = await data.populate("category");
+      res.send(result);
       res.send(data);
     } catch (error) {
       res.status(500).send(error);

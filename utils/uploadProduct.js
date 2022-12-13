@@ -6,9 +6,10 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
-      let fileName = file.originalname;
-      const name = [Date.now(), "-", fileName].join("");
-      cb(null, name);
+      let originalName = file.originalname;
+      const name = [Date.now(), "-", originalName].join("");
+      let fileName = Buffer.from(name, "latin1").toString("utf8");
+      cb(null, fileName);
     } else {
       cb(new Error("File type is not supported"), false);
     }

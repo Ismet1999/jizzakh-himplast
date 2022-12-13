@@ -38,10 +38,10 @@ const ProductSchema = new Schema({
     type: Boolean,
     default: false,
   },
-  is_active:{
+  is_active: {
     type: Boolean,
     default: true,
-  } , 
+  },
   description: {
     type: Object,
     required: true,
