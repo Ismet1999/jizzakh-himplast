@@ -8,7 +8,7 @@ let uploadProduct = require("../utils/uploadProduct");
 router.get("/", productController.getAll);
 router.post("/", authenticateToken, uploadProduct, productController.create);
 router.get("/:id", productController.getOne);
-router.put("/:id", authenticateToken, productController.edit);
+router.put("/:id", authenticateToken, uploadProduct, productController.edit);
 router.delete("/:id", authenticateToken, productController.delete);
 
 module.exports = router;

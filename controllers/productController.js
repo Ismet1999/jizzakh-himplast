@@ -19,6 +19,7 @@ class ProductController {
         specifications: JSON.parse(req.body.specifications),
       };
       let main_image = req.files.main_image && req.files.main_image[0].path;
+      console.log(req.files.images);
       let images = req.files.images?.map((item) => item.path);
       if (main_image) {
         item.main_image = main_image;
@@ -61,10 +62,10 @@ class ProductController {
       if (main_image) {
         item.main_image = main_image;
       }
-      if (images && images.length) {
-        item.images = images;
-      }
-      const data = await Product.findByIdAndUpdate(req.params.id, item, {
+      // if (images && images.length) {
+      //   item.images = images;
+      // }
+      const data = await Product.findByIdAndUpdate(req.params._id, item, {
         new: true,
       });
       await Category.findByIdAndUpdate(

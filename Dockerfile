@@ -14,9 +14,8 @@ RUN npm install
 # RUN npm rebuild bcrypt --build-from-source
 
 COPY . /app 
-COPY /nginx/default /etc/nginx/nginx.conf
-# COPY /nginx/default /etc/nginx/sites-available/default
 
+EXPOSE 5000
 
 CMD ["node", "index.js"]
 
