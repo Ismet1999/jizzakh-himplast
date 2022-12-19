@@ -22,5 +22,4 @@ let fields = [
   { name: "images", maxCount: 20 },
 ];
 let uploadProduct = upload.fields(fields);
-
 module.exports = uploadProduct;

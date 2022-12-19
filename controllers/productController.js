@@ -19,13 +19,8 @@ class ProductController {
         specifications: JSON.parse(req.body.specifications),
       };
       let main_image = req.files.main_image && req.files.main_image[0].path;
-      console.log(req.files.images);
-      let images = req.files.images?.map((item) => item.path);
       if (main_image) {
         item.main_image = main_image;
-      }
-      if (images && images.length) {
-        item.images = images;
       }
       const data = new Product(item);
       await data.save();
@@ -58,29 +53,59 @@ class ProductController {
         specifications: JSON.parse(req.body.specifications),
       };
       let main_image = req.files.main_image && req.files.main_image[0].path;
-      let images = req.files.images?.map((item) => item.path);
       if (main_image) {
         item.main_image = main_image;
       }
-      // if (images && images.length) {
-      //   item.images = images;
-      // }
-      const data = await Product.findByIdAndUpdate(req.params._id, item, {
-        new: true,
-      });
+      const oldProduct = await Product.findById(req.params._id);
       await Category.findByIdAndUpdate(
-        req.body.category,
-        { $pull: { products: data._id } },
+        oldProduct.category,
+        { $pull: { products: req.params.id } },
         { new: true }
       );
-      await Category.findByIdAndUpdate(
+      const data = await Product.findByIdAndUpdate(req.params.id, item, {
+        new: true,
+      });
+      let newData = await Category.findByIdAndUpdate(
         req.body.category,
         { $push: { products: data._id } },
         { new: true }
       );
-      let result = await data.populate("category");
+      let result = await newData.populate("category");
       res.send(result);
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  }
+  addPhoto(req, res) {
+    try {
+      let _id = req.body._id;
+      let images = req.files.images?.map((item) => item.path);
+      if (images && images.length) {
+        item.images = images;
+      }
+      let data = Product.findByIdAndUpdate(
+        _id,
+        {
+          $push: { images: images },
+        },
+        { new: true }
+      );
       res.send(data);
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  }
+  deletePhoto(req, res) {
+    try {
+      let path = req.body.path;
+      // delete file
+      fs.unlink(path, (err) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+      });
+      res.status(204).send();
     } catch (error) {
       res.status(500).send(error);
     }
