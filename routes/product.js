@@ -10,5 +10,12 @@ router.post("/", authenticateToken, uploadProduct, productController.create);
 router.get("/:id", productController.getOne);
 router.put("/:id", authenticateToken, uploadProduct, productController.edit);
 router.delete("/:id", authenticateToken, productController.delete);
+router.put(
+  "/:id/image",
+  authenticateToken,
+  uploadProduct,
+  productController.addPhoto
+);
+router.put("/:id/image/", authenticateToken, productController.deletePhoto);
 
 module.exports = router;

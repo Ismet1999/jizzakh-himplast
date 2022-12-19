@@ -78,13 +78,13 @@ class ProductController {
   }
   addPhoto(req, res) {
     try {
-      let _id = req.body._id;
+      let id = req.body.id;
       let images = req.files.images?.map((item) => item.path);
       if (images && images.length) {
         item.images = images;
       }
       let data = Product.findByIdAndUpdate(
-        _id,
+        id,
         {
           $push: { images: images },
         },
@@ -97,15 +97,31 @@ class ProductController {
   }
   deletePhoto(req, res) {
     try {
+      let id = req.body.id;
       let path = req.body.path;
-      // delete file
-      fs.unlink(path, (err) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-      });
-      res.status(204).send();
+
+      // check if file exists in the product
+      let data = Product.findById(id);
+      if (!data.images.includes(path)) {
+        res.status(400).send("File does not exist");
+      } else {
+        // remove file from product
+        let data = Product.findByIdAndUpdate(
+          id,
+          {
+            $pull: { images: path },
+          },
+          { new: true }
+        );
+        // delete file
+        fs.unlink(path, (err) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+        });
+        res.status(204).send();
+      }
     } catch (error) {
       res.status(500).send(error);
     }
