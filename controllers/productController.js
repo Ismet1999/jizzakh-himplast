@@ -1,5 +1,6 @@
 const Category = require("../models/category");
 const Product = require("../models/product");
+const fs = require("fs");
 
 class ProductController {
   async getAll(req, res) {
@@ -114,13 +115,16 @@ class ProductController {
           { new: true }
         );
         // delete file
-        fs.unlink(path, (err) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-        });
-        res.status(204).send();
+        fs.promises
+          .unlink(path)
+          .then(() => {
+            res.status(204).send();
+          })
+          .catch((err) => {
+            res
+              .status(500)
+              .send("Error deleting file. Please try again later.");
+          });
       }
     } catch (error) {
       res.status(500).send(error);
