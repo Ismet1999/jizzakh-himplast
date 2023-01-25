@@ -6,7 +6,7 @@ FROM node:16
 WORKDIR /app
 # https://stackoverflow.com/a/32785014/232619
 
-RUN apt-get update && apt-get install -y nginx
+# RUN apt-get update && apt-get install -y nginx
 # install dependencies
 COPY package.json .
 
